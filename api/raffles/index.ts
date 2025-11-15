@@ -1,8 +1,9 @@
 
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../_lib/db';
-import { createHistoryLog } from '../_lib/history';
+import { db } from '../_lib/db.js';
+import { createHistoryLog } from '../_lib/history.js';
 import { Raffle, Sale, Cost } from '../../types';
 
 async function handleGet(req: VercelRequest, res: VercelResponse) {
@@ -25,6 +26,7 @@ async function handleGet(req: VercelRequest, res: VercelResponse) {
 
         return res.status(200).json(rafflesWithDetails);
     } catch (error: any) {
+        console.error("[API_ERROR] in GET /api/raffles:", error);
         return res.status(500).json({ message: error.message });
     }
 }
@@ -77,6 +79,7 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
         return res.status(201).json(newRaffle);
     } catch (error: any) {
         await connection.rollback();
+        console.error("[API_ERROR] in POST /api/raffles:", error);
         return res.status(500).json({ message: error.message });
     }
 }

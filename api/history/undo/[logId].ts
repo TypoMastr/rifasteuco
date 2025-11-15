@@ -1,6 +1,7 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../../_lib/db';
+import { db } from '../../_lib/db.js';
 import { HistoryLog, Raffle, Sale, Cost } from '../../../types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -92,6 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error: any) {
         await connection.rollback();
+        console.error(`[API_ERROR] in POST /api/history/undo/${logId}:`, error);
         return res.status(500).json({ message: error.message });
     }
 }

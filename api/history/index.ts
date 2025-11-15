@@ -1,7 +1,8 @@
 
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../_lib/db';
+import { db } from '../_lib/db.js';
 import { HistoryLog } from '../../types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -23,6 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         return res.status(200).json(formattedLogs);
     } catch (error: any) {
+        console.error("[API_ERROR] in GET /api/history:", error);
         return res.status(500).json({ message: error.message });
     }
 }

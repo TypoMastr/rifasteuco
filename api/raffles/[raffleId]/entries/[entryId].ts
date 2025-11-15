@@ -1,7 +1,8 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../../../_lib/db';
-import { createHistoryLog } from '../../../_lib/history';
+import { db } from '../../../_lib/db.js';
+import { createHistoryLog } from '../../../_lib/history.js';
 import { Sale, Cost, HistoryLogActionType } from '../../../../types';
 
 async function handlePut(req: VercelRequest, res: VercelResponse) {
@@ -75,6 +76,7 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
 
     } catch (error: any) {
         await connection.rollback();
+        console.error(`[API_ERROR] in PUT /api/raffles/${raffleId}/entries/${entryId}:`, error);
         return res.status(500).json({ message: error.message });
     }
 }
@@ -121,6 +123,7 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
         return res.status(204).end();
     } catch (error: any) {
         await connection.rollback();
+        console.error(`[API_ERROR] in DELETE /api/raffles/${raffleId}/entries/${entryId}:`, error);
         return res.status(500).json({ message: error.message });
     }
 }

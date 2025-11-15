@@ -1,7 +1,8 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../../../_lib/db';
-import { createHistoryLog } from '../../../_lib/history';
+import { db } from '../../../_lib/db.js';
+import { createHistoryLog } from '../../../_lib/history.js';
 import { Sale, Cost } from '../../../../types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -68,6 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error: any) {
         await connection.rollback();
+        console.error(`[API_ERROR] in POST /api/raffles/${raffleId}/entries:`, error);
         return res.status(500).json({ message: error.message });
     }
 }
