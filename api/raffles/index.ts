@@ -4,8 +4,9 @@ import { createHistoryLog } from '../_lib/history.js';
 import { Raffle, Sale, Cost } from '../../types';
 
 async function handleGet(req: VercelRequest, res: VercelResponse) {
-    const connection = db;
+    let connection;
     try {
+        connection = await db.getConnection();
         const [raffles]: any[] = await connection.query('SELECT * FROM raffles ORDER BY date DESC, title ASC');
         const [sales]: any[] = await connection.query('SELECT * FROM sales');
         const [costs]: any[] = await connection.query('SELECT * FROM costs');
@@ -25,6 +26,8 @@ async function handleGet(req: VercelRequest, res: VercelResponse) {
     } catch (error: any) {
         console.error("[API_ERROR] in GET /api/raffles:", error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }
 

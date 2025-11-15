@@ -8,8 +8,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
-    const connection = db;
+    let connection;
     try {
+        connection = await db.getConnection();
         const [logs]: any[] = await connection.query('SELECT * FROM history_logs ORDER BY timestamp DESC');
         
         const formattedLogs: HistoryLog[] = logs.map((log: any) => ({
@@ -23,5 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (error: any) {
         console.error("[API_ERROR] in GET /api/history:", error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }
