@@ -1,13 +1,10 @@
-
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../_lib/db.js';
 import { createHistoryLog } from '../_lib/history.js';
 import { Raffle, Sale, Cost } from '../../types';
 
 async function handleGet(req: VercelRequest, res: VercelResponse) {
-    const connection = await db();
+    const connection = db;
     try {
         const [raffles]: any[] = await connection.query('SELECT * FROM raffles ORDER BY date DESC, title ASC');
         const [sales]: any[] = await connection.query('SELECT * FROM sales');
@@ -38,8 +35,9 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
     
-    const connection = await db();
+    let connection;
     try {
+        connection = await db.getConnection();
         await connection.beginTransaction();
 
         const newRaffleId = crypto.randomUUID();
@@ -78,9 +76,11 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
         await connection.commit();
         return res.status(201).json(newRaffle);
     } catch (error: any) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error("[API_ERROR] in POST /api/raffles:", error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }
 

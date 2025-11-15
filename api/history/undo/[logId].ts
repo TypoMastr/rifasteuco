@@ -1,5 +1,3 @@
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../_lib/db.js';
 import { HistoryLog, Raffle, Sale, Cost } from '../../../types';
@@ -15,8 +13,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: 'Log ID is required' });
     }
 
-    const connection = await db();
+    let connection;
     try {
+        connection = await db.getConnection();
         await connection.beginTransaction();
 
         const [logs]: any[] = await connection.query('SELECT * FROM history_logs WHERE id = ?', [logId]);
@@ -92,8 +91,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(204).end();
 
     } catch (error: any) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error(`[API_ERROR] in POST /api/history/undo/${logId}:`, error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }

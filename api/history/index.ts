@@ -1,6 +1,3 @@
-
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../_lib/db.js';
 import { HistoryLog } from '../../types';
@@ -11,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
-    const connection = await db();
+    const connection = db;
     try {
         const [logs]: any[] = await connection.query('SELECT * FROM history_logs ORDER BY timestamp DESC');
         

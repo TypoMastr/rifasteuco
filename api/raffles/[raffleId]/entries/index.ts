@@ -1,5 +1,3 @@
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../../_lib/db.js';
 import { createHistoryLog } from '../../../_lib/history.js';
@@ -18,8 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: 'Missing raffleId or invalid entry type' });
     }
     
-    const connection = await db();
+    let connection;
     try {
+        connection = await db.getConnection();
         await connection.beginTransaction();
 
         const [raffles]: any[] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
@@ -68,8 +67,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(201).json(newEntry);
 
     } catch (error: any) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error(`[API_ERROR] in POST /api/raffles/${raffleId}/entries:`, error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }

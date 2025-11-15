@@ -1,5 +1,3 @@
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../_lib/db.js';
 import { createHistoryLog } from '../../_lib/history.js';
@@ -13,8 +11,9 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: 'Invalid raffle ID' });
     }
 
-    const connection = await db();
+    let connection;
     try {
+        connection = await db.getConnection();
         await connection.beginTransaction();
 
         const [existingRaffles]: any[] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
@@ -48,9 +47,11 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json(afterState);
 
     } catch (error: any) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error(`[API_ERROR] in PUT /api/raffles/${raffleId}:`, error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }
 
@@ -61,8 +62,9 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: 'Raffle ID is required' });
     }
 
-    const connection = await db();
+    let connection;
     try {
+        connection = await db.getConnection();
         await connection.beginTransaction();
 
         const [raffles]: any[] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
@@ -88,9 +90,11 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
         await connection.commit();
         return res.status(204).end();
     } catch (error: any) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error(`[API_ERROR] in DELETE /api/raffles/${raffleId}:`, error);
         return res.status(500).json({ message: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }
 
