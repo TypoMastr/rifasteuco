@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, onOpenRaffleModal, onOpen
         <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-stroke p-4 space-y-4 fixed h-full">
             <div className="flex items-center space-x-3 px-2 pt-2 pb-4">
                 <img 
-                    src="https://cdn-icons-png.flaticon.com/512/5736/5736443.png" 
+                    src="https://teuco.com.br/rifas/icone_rifas.png" 
                     alt="Ícone Rifas TEUCO" 
                     className="w-10 h-10" 
                 />

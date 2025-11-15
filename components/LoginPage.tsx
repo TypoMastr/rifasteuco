@@ -70,7 +70,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         <div className="bg-background min-h-screen flex items-center justify-center p-4">
             <div className={`w-full max-w-sm mx-auto bg-surface rounded-2xl shadow-card border border-stroke p-8 text-center ${isExiting ? 'animate-fade-out-scale' : ''}`}>
                 <img 
-                    src="https://cdn-icons-png.flaticon.com/512/5736/5736443.png" 
+                    src="https://teuco.com.br/rifas/icone_rifas.png" 
                     alt="Ícone Rifas TEUCO" 
                     className="w-24 h-24 mx-auto mb-4 animate-icon-enter animate-float" 
                 />
