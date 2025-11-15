@@ -1,3 +1,4 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../_lib/db';
 import { createHistoryLog } from '../../_lib/history';
@@ -15,8 +16,7 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [existingRaffles] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
+        const [existingRaffles]: any[] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
         if (existingRaffles.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });
@@ -63,14 +63,13 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [raffles] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
+        const [raffles]: any[] = await connection.query('SELECT * FROM raffles WHERE id = ?', [raffleId]);
         if (raffles.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });
         }
-        const [sales] = await connection.query('SELECT * FROM sales WHERE raffleId = ?', [raffleId]);
-        const [costs] = await connection.query('SELECT * FROM costs WHERE raffleId = ?', [raffleId]);
+        const [sales]: any[] = await connection.query('SELECT * FROM sales WHERE raffleId = ?', [raffleId]);
+        const [costs]: any[] = await connection.query('SELECT * FROM costs WHERE raffleId = ?', [raffleId]);
         
         const beforeState = { ...raffles[0], sales, costs };
 

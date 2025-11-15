@@ -1,3 +1,4 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../_lib/db';
 import { createHistoryLog } from '../_lib/history';
@@ -6,12 +7,9 @@ import { Raffle, Sale, Cost } from '../../types';
 async function handleGet(req: VercelRequest, res: VercelResponse) {
     const connection = await db();
     try {
-        // FIX: Untyped function calls may not accept type arguments.
-        const [raffles] = await connection.query('SELECT * FROM raffles ORDER BY date DESC, title ASC');
-        // FIX: Untyped function calls may not accept type arguments.
-        const [sales] = await connection.query('SELECT * FROM sales');
-        // FIX: Untyped function calls may not accept type arguments.
-        const [costs] = await connection.query('SELECT * FROM costs');
+        const [raffles]: any[] = await connection.query('SELECT * FROM raffles ORDER BY date DESC, title ASC');
+        const [sales]: any[] = await connection.query('SELECT * FROM sales');
+        const [costs]: any[] = await connection.query('SELECT * FROM costs');
 
         const rafflesWithDetails: Raffle[] = raffles.map(raffle => ({
             ...raffle,

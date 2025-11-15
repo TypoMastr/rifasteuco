@@ -1,3 +1,4 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../../_lib/db';
 import { createHistoryLog } from '../../../_lib/history';
@@ -20,8 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [raffles] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
+        const [raffles]: any[] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
         if (raffles.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });

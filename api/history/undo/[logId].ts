@@ -1,3 +1,4 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../_lib/db';
 import { HistoryLog, Raffle, Sale, Cost } from '../../../types';
@@ -17,8 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [logs] = await connection.query('SELECT * FROM history_logs WHERE id = ?', [logId]);
+        const [logs]: any[] = await connection.query('SELECT * FROM history_logs WHERE id = ?', [logId]);
         if (logs.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Log not found' });
@@ -40,11 +40,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     [raffleToRestore.id, raffleToRestore.title, raffleToRestore.category, raffleToRestore.date, raffleToRestore.ticketPrice, raffleToRestore.isFinalized]);
                 for (const sale of raffleToRestore.sales) {
                     await connection.query('INSERT INTO sales (id, raffleId, description, quantity, amount) VALUES (?, ?, ?, ?, ?)',
-                        // FIX: Property 'raffleId' does not exist on type 'Sale'. Using raffleToRestore.id instead.
                         [sale.id, raffleToRestore.id, sale.description, sale.quantity, sale.amount]);
                 }
                 for (const cost of raffleToRestore.costs) {
-                    // FIX: Property 'raffleId' does not exist on type 'Cost'. Using raffleToRestore.id instead.
                     await connection.query('INSERT INTO costs (id, raffleId, description, amount, date, isDonation, isReimbursement, notes, reimbursedDate, reimbursementNotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                         [cost.id, raffleToRestore.id, cost.description, cost.amount, cost.date, cost.isDonation, cost.isReimbursement, cost.notes, cost.reimbursedDate, cost.reimbursementNotes]);
                 }

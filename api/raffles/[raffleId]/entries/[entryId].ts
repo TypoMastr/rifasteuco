@@ -1,6 +1,6 @@
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../../../_lib/db';
-// FIX: Module '"../../../_lib/history"' declares 'HistoryLogActionType' locally, but it is not exported.
 import { createHistoryLog } from '../../../_lib/history';
 import { Sale, Cost, HistoryLogActionType } from '../../../../types';
 
@@ -13,16 +13,14 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [raffles] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
+        const [raffles]: any[] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
         if (raffles.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });
         }
         const raffleTitle = raffles[0].title;
         
-        // FIX: Untyped function calls may not accept type arguments.
-        const [existingEntries] = await connection.query(`SELECT * FROM ${table} WHERE id = ?`, [entryId]);
+        const [existingEntries]: any[] = await connection.query(`SELECT * FROM ${table} WHERE id = ?`, [entryId]);
         if (existingEntries.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Entry not found' });
@@ -92,16 +90,14 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
     try {
         await connection.beginTransaction();
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [raffles] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
+        const [raffles]: any[] = await connection.query('SELECT title FROM raffles WHERE id = ?', [raffleId]);
         if (raffles.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });
         }
         const raffleTitle = raffles[0].title;
 
-        // FIX: Untyped function calls may not accept type arguments.
-        const [existingEntries] = await connection.query(`SELECT * FROM ${table} WHERE id = ?`, [entryId]);
+        const [existingEntries]: any[] = await connection.query(`SELECT * FROM ${table} WHERE id = ?`, [entryId]);
         if (existingEntries.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: 'Entry not found' });
