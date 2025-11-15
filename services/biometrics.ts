@@ -39,10 +39,9 @@ export const registerBiometricCredential = async (): Promise<boolean> => {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
       rp: {
         name: "Rifas TEUCO",
-        // The Relying Party ID is a domain string that identifies the entity.
-        // Omitting it lets the browser default to the current origin's domain,
-        // which is a more robust approach for sandboxed/development environments.
-        // id: window.location.hostname,
+        // Explicitly setting the relying party ID to the current hostname
+        // helps resolve origin issues when the app is running in an iframe.
+        id: window.location.hostname,
       },
       user: {
         id: base64ToBuffer(userId),
@@ -52,8 +51,8 @@ export const registerBiometricCredential = async (): Promise<boolean> => {
       pubKeyCredParams: [{ alg: -7, type: 'public-key' }], // ES256
       authenticatorSelection: {
         authenticatorAttachment: 'platform',
-        userVerification: 'preferred',
-        requireResidentKey: false,
+        userVerification: 'required',
+        residentKey: 'required',
       },
       timeout: 60000,
       attestation: 'none',
@@ -90,13 +89,14 @@ export const authenticateWithBiometrics = async (): Promise<boolean> => {
 
     const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rpId: window.location.hostname, // Set RP ID for authentication as well.
       allowCredentials: [{
         type: 'public-key',
         id: base64ToBuffer(credentialIdBase64),
         transports: ['internal'],
       }],
       timeout: 60000,
-      userVerification: 'preferred',
+      userVerification: 'required',
     };
 
     const assertion = await navigator.credentials.get({

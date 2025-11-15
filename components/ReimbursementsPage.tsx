@@ -173,7 +173,7 @@ const ReimbursementsPage: React.FC<ReimbursementsPageProps> = ({ raffles, onBack
                 <h2 className="text-2xl font-extrabold text-primary tracking-tight">Reembolsos</h2>
                  <button 
                     onClick={onLogout} 
-                    className="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors"
+                    className="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors md:hidden"
                     aria-label="Sair do aplicativo"
                     title="Sair"
                 >

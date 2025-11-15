@@ -299,7 +299,7 @@ const RelatoriosPage: React.FC<RelatoriosPageProps> = ({ raffles, onNavigateToMo
                 <p className="text-text-secondary mt-1">Um resumo financeiro de todas as suas rifas.</p>
                 <button 
                     onClick={onLogout} 
-                    className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors"
+                    className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors md:hidden"
                     aria-label="Sair do aplicativo"
                     title="Sair"
                 >

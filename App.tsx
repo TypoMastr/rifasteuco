@@ -3,6 +3,7 @@ import type { Raffle, Sale, Cost, HistoryLog } from './types';
 import * as api from './services/api';
 
 import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import RaffleListPage from './components/RaffleListPage';
 import RelatoriosPage from './components/RelatoriosPage';
 import RaffleDetailPage from './components/RaffleDetailPage';
@@ -548,9 +549,19 @@ function App() {
 
   return (
     <div className="bg-background min-h-screen text-text-primary font-sans">
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-24">
-        {renderContent()}
-      </main>
+        <Sidebar
+            onNavigate={handleNavigate}
+            onOpenRaffleModal={() => setActiveModal('raffle')}
+            onOpenGlobalEntryModal={(type) => setActiveModal(type === 'sale' ? 'globalSale' : 'globalCost')}
+            onNavigateToReimbursements={handleNavigateToReimbursements}
+            onLogout={handleLogout}
+            currentPage={currentPage}
+        />
+        <div className="md:pl-64">
+            <main className="px-4 py-6 pb-24 md:py-8 md:px-10 lg:px-16 md:pb-8">
+                {renderContent()}
+            </main>
+        </div>
 
       <Navbar 
         onNavigate={handleNavigate} 

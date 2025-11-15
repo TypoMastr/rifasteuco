@@ -273,21 +273,23 @@ const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onA
 
              {/* Entries */}
             <div className="space-y-6">
-                <SaleList 
-                    sales={raffle.sales} 
-                    ticketPrice={raffle.ticketPrice}
-                    onDelete={(sale) => onOpenDeleteConfirmation(raffle.id, 'sale', sale)}
-                    onEdit={(sale) => onOpenEditEntryModal(raffle.id, 'sale', sale)}
-                    onSave={handleSaveSale}
-                    isFinalized={raffle.isFinalized}
-                />
-                 <CostList 
-                    costs={raffle.costs} 
-                    onDelete={(cost) => onOpenDeleteConfirmation(raffle.id, 'cost', cost)} 
-                    onEdit={(cost) => onOpenEditEntryModal(raffle.id, 'cost', cost)}
-                    onSave={handleSaveCost}
-                    isFinalized={raffle.isFinalized}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <SaleList 
+                        sales={raffle.sales} 
+                        ticketPrice={raffle.ticketPrice}
+                        onDelete={(sale) => onOpenDeleteConfirmation(raffle.id, 'sale', sale)}
+                        onEdit={(sale) => onOpenEditEntryModal(raffle.id, 'sale', sale)}
+                        onSave={handleSaveSale}
+                        isFinalized={raffle.isFinalized}
+                    />
+                     <CostList 
+                        costs={raffle.costs} 
+                        onDelete={(cost) => onOpenDeleteConfirmation(raffle.id, 'cost', cost)} 
+                        onEdit={(cost) => onOpenEditEntryModal(raffle.id, 'cost', cost)}
+                        onSave={handleSaveCost}
+                        isFinalized={raffle.isFinalized}
+                    />
+                </div>
                 <ReimbursementSection 
                     costs={raffle.costs} 
                     onSelectPending={(cost) => onOpenReimburseModal(raffle.id, cost)} 

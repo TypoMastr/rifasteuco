@@ -85,7 +85,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ history, raffles, onUndo, onL
         <p className="text-text-secondary mt-1">Todas as alterações feitas no sistema são registradas aqui.</p>
          <button 
             onClick={onLogout} 
-            className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors"
+            className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors md:hidden"
             aria-label="Sair do aplicativo"
             title="Sair"
         >

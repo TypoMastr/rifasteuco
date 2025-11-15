@@ -123,7 +123,7 @@ const RaffleListPage: React.FC<RaffleListPageProps> = ({ raffles, onSelectRaffle
                 <h2 className="text-3xl font-extrabold text-primary tracking-tight">Controle de Rifas</h2>
                  <button 
                     onClick={onLogout} 
-                    className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors"
+                    className="absolute top-0 right-0 p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors md:hidden"
                     aria-label="Sair do aplicativo"
                     title="Sair"
                 >
@@ -178,7 +178,7 @@ const RaffleListPage: React.FC<RaffleListPageProps> = ({ raffles, onSelectRaffle
             </div>
 
             {sortedAndFilteredRaffles.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {sortedAndFilteredRaffles.map(raffle => (
                         <RaffleCard key={raffle.id} raffle={raffle} onSelect={() => onSelectRaffle(raffle.id)} />
                     ))}
