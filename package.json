@@ -3,18 +3,24 @@
   "version": "1.0.0",
   "description": "Aplicação para gerenciar rifas",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "echo 'Use Vercel CLI for development: vercel dev'",
-    "build": "echo 'Vercel handles the build process'"
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
-    "mysql2": "^3.10.1"
+    "mysql2": "^3.10.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vercel/node": "^3.1.7",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "@vitejs/plugin-react": "^4.3.0",
+    "vite-plugin-static-copy": "^1.0.4"
   }
 }
