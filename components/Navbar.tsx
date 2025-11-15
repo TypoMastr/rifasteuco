@@ -65,8 +65,8 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenRaffleModal, onOpenGl
 
     return (
         <div className="md:hidden">
-            <div className="fixed bottom-0 left-0 right-0 h-16 bg-surface/80 backdrop-blur-sm border-t border-stroke z-40">
-                <div className="flex items-center h-full max-w-md mx-auto px-1">
+            <div className="fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-sm border-t border-stroke z-40">
+                <div className="flex items-center max-w-md mx-auto px-1 pt-1" style={{ paddingBottom: 'calc(0.25rem + env(safe-area-inset-bottom))' }}>
                      <div className="flex-1 flex items-center gap-1">
                         <NavButton page="list" label="Rifas" icon={<TicketIcon className="h-6 w-6" />} onClick={() => onNavigate('list')} />
                         <NavButton page="reimbursements" label="Reembolsos" icon={<BanknotesIcon className="h-6 w-6" />} onClick={onNavigateToReimbursements} />
