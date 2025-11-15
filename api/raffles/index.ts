@@ -1,4 +1,5 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../_lib/db';
 import { createHistoryLog } from '../_lib/history';
@@ -11,11 +12,11 @@ async function handleGet(req: VercelRequest, res: VercelResponse) {
         const [sales]: any[] = await connection.query('SELECT * FROM sales');
         const [costs]: any[] = await connection.query('SELECT * FROM costs');
 
-        const rafflesWithDetails: Raffle[] = raffles.map(raffle => ({
+        const rafflesWithDetails: Raffle[] = raffles.map((raffle: any) => ({
             ...raffle,
             isFinalized: !!raffle.isFinalized,
-            sales: sales.filter(s => s.raffleId === raffle.id),
-            costs: costs.filter(c => c.raffleId === raffle.id).map(cost => ({
+            sales: sales.filter((s: any) => s.raffleId === raffle.id),
+            costs: costs.filter((c: any) => c.raffleId === raffle.id).map((cost: any) => ({
                 ...cost,
                 isDonation: !!cost.isDonation,
                 isReimbursement: !!cost.isReimbursement

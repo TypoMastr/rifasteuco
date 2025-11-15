@@ -1,4 +1,5 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { db } from '../_lib/db';
 import { HistoryLog } from '../../types';
@@ -13,7 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         const [logs]: any[] = await connection.query('SELECT * FROM history_logs ORDER BY timestamp DESC');
         
-        const formattedLogs: HistoryLog[] = logs.map(log => ({
+        const formattedLogs: HistoryLog[] = logs.map((log: any) => ({
             ...log,
             timestamp: new Date(log.timestamp).toISOString(),
             undone: !!log.undone,
