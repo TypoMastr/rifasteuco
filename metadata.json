@@ -2,7 +2,7 @@
   "name": "Rifas TEUCO",
   "short_name": "Rifas TEUCO",
   "description": "Uma aplicação para gerenciar e visualizar o status de rifas.",
-  "start_url": ".",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
