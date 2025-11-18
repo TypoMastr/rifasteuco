@@ -25,7 +25,24 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
             await connection.rollback();
             return res.status(404).json({ message: 'Entry not found' });
         }
-        const beforeState = existingEntries[0];
+        
+        const beforeStateRaw = existingEntries[0];
+        let beforeState: Sale | Cost;
+
+        if (type === 'sale') {
+            beforeState = {
+                ...beforeStateRaw,
+                quantity: parseInt(beforeStateRaw.quantity, 10),
+                amount: parseFloat(beforeStateRaw.amount)
+            } as Sale;
+        } else { // cost
+            beforeState = {
+                ...beforeStateRaw,
+                amount: parseFloat(beforeStateRaw.amount),
+                isDonation: !!beforeStateRaw.isDonation,
+                isReimbursement: !!beforeStateRaw.isReimbursement
+            } as Cost;
+        }
         
         let actionType: HistoryLogActionType = 'UPDATE_COST';
         let description = '';
@@ -45,8 +62,8 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
                 [costDesc, amount, date || null, isDonation, isReimbursement, notes, reimbursedDate || null, reimbursementNotes, entryId]
             );
             
-            const wasReimbursed = !beforeState.reimbursedDate && reimbursedDate;
-            const wasUnreimbursed = beforeState.reimbursedDate && !reimbursedDate;
+            const wasReimbursed = !(beforeState as Cost).reimbursedDate && reimbursedDate;
+            const wasUnreimbursed = (beforeState as Cost).reimbursedDate && !reimbursedDate;
 
             if (wasReimbursed) {
                 actionType = 'ADD_REIMBURSEMENT';
@@ -66,7 +83,7 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
             raffleTitle,
             entityId: String(entryId),
             description,
-            beforeState: { ...beforeState, isDonation: !!beforeState.isDonation, isReimbursement: !!beforeState.isReimbursement },
+            beforeState: beforeState,
             afterState: entryData
         });
 
@@ -106,7 +123,22 @@ async function handleDelete(req: VercelRequest, res: VercelResponse) {
             await connection.rollback();
             return res.status(404).json({ message: 'Entry not found' });
         }
-        const beforeState = existingEntries[0];
+        
+        const beforeStateRaw = existingEntries[0];
+        let beforeState: any;
+
+        if (type === 'sale') {
+            beforeState = {
+                ...beforeStateRaw,
+                quantity: parseInt(beforeStateRaw.quantity, 10),
+                amount: parseFloat(beforeStateRaw.amount)
+            };
+        } else { // cost
+            beforeState = {
+                ...beforeStateRaw,
+                amount: parseFloat(beforeStateRaw.amount)
+            };
+        }
         
         await connection.query(`DELETE FROM ${table} WHERE id = ?`, [entryId]);
         

@@ -21,7 +21,13 @@ async function handlePut(req: VercelRequest, res: VercelResponse) {
             await connection.rollback();
             return res.status(404).json({ message: 'Raffle not found' });
         }
-        const beforeState = { ...existingRaffles[0], isFinalized: !!existingRaffles[0].isFinalized };
+        const beforeStateRaw = existingRaffles[0];
+        const beforeState = { 
+            ...beforeStateRaw, 
+            ticketPrice: parseFloat(beforeStateRaw.ticketPrice), 
+            isFinalized: !!beforeStateRaw.isFinalized 
+        };
+
 
         await connection.query(
             'UPDATE raffles SET title = ?, category = ?, date = ?, ticketPrice = ?, isFinalized = ? WHERE id = ?',
