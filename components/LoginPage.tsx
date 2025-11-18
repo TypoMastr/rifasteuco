@@ -7,7 +7,7 @@ import {
 } from '../services/biometrics';
 
 interface LoginPageProps {
-    onLoginSuccess: () => void;
+    onLoginSuccess: (isReadOnly?: boolean) => void;
 }
 
 const KeyIcon: React.FC<React.ComponentProps<'svg'>> = (props) => (
@@ -23,11 +23,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
     const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-    const handleSuccessfulLogin = () => {
+    const handleSuccessfulLogin = (isReadOnly: boolean = false) => {
         setError('');
         setIsExiting(true);
         setTimeout(() => {
-            onLoginSuccess();
+            onLoginSuccess(isReadOnly);
         }, 400); // Corresponds to the exit animation duration
     };
 
@@ -36,7 +36,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         setError('');
         const success = await authenticateWithBiometrics();
         if (success) {
-            handleSuccessfulLogin();
+            handleSuccessfulLogin(false); // Biometric is always full-access
         } else {
             // User might have cancelled, don't show an error unless it's a real failure.
             // For simplicity, we just stop the authenticating state.
@@ -58,7 +58,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const handlePasswordLogin = (e: React.FormEvent) => {
         e.preventDefault();
         if (password === 'rifa396') {
-            handleSuccessfulLogin();
+            handleSuccessfulLogin(false);
+        } else if (password === 'rifasteuco') {
+            handleSuccessfulLogin(true);
         } else {
             setError('Senha incorreta. Tente novamente.');
             setPassword('');

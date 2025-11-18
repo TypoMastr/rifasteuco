@@ -78,9 +78,10 @@ interface ReimbursementsPageProps {
     onOpenReimburseModal: (raffleId: string, cost: Cost) => void;
     onNavigateToHistory: () => void;
     onLogout: () => void;
+    isReadOnly: boolean;
 }
 
-const ReimbursementsPage: React.FC<ReimbursementsPageProps> = ({ raffles, onBack, onOpenEditCostModal, onSelectRaffle, onOpenReimburseModal, onNavigateToHistory, onLogout }) => {
+const ReimbursementsPage: React.FC<ReimbursementsPageProps> = ({ raffles, onBack, onOpenEditCostModal, onSelectRaffle, onOpenReimburseModal, onNavigateToHistory, onLogout, isReadOnly }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRaffleId, setSelectedRaffleId] = useState('all');
     const [selectedCategory, setSelectedCategory] = useState('Todas');
@@ -264,22 +265,24 @@ const ReimbursementsPage: React.FC<ReimbursementsPageProps> = ({ raffles, onBack
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center space-x-2 pt-2 border-t border-stroke/80">
-                            <button
-                                onClick={() => handleEditClick(cost)}
-                                className="bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-lg hover:bg-slate-300 transition-colors text-sm flex-1 flex items-center justify-center space-x-2"
-                            >
-                                <PencilIcon className="h-4 w-4" />
-                                <span>Editar</span>
-                            </button>
-                            <button
-                                onClick={() => handleReimburseClick(cost)}
-                                className="bg-amber-100 text-amber-800 font-bold py-2 px-3 rounded-lg hover:bg-amber-200 transition-colors text-sm flex-1 flex items-center justify-center space-x-2"
-                            >
-                                <BanknotesIcon className="h-4 w-4" />
-                                <span>Reembolsar</span>
-                            </button>
-                        </div>
+                        {!isReadOnly && (
+                            <div className="flex items-center space-x-2 pt-2 border-t border-stroke/80">
+                                <button
+                                    onClick={() => handleEditClick(cost)}
+                                    className="bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-lg hover:bg-slate-300 transition-colors text-sm flex-1 flex items-center justify-center space-x-2"
+                                >
+                                    <PencilIcon className="h-4 w-4" />
+                                    <span>Editar</span>
+                                </button>
+                                <button
+                                    onClick={() => handleReimburseClick(cost)}
+                                    className="bg-amber-100 text-amber-800 font-bold py-2 px-3 rounded-lg hover:bg-amber-200 transition-colors text-sm flex-1 flex items-center justify-center space-x-2"
+                                >
+                                    <BanknotesIcon className="h-4 w-4" />
+                                    <span>Reembolsar</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )) : (
                      <div className="text-center py-16 border-2 border-dashed border-stroke rounded-lg bg-slate-50 mt-8">

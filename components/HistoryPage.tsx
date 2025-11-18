@@ -18,6 +18,7 @@ interface HistoryPageProps {
   raffles: Raffle[];
   onUndo: (logId: string) => void;
   onLogout: () => void;
+  isReadOnly: boolean;
 }
 
 const actionTypeDetails: { [key in HistoryLogActionType]: { label: string; icon: React.FC<React.ComponentProps<'svg'>>; color: string } } = {
@@ -55,7 +56,7 @@ const formatRaffleDateForFilter = (dateString: string): string => {
 };
 
 
-const HistoryPage: React.FC<HistoryPageProps> = ({ history, raffles, onUndo, onLogout }) => {
+const HistoryPage: React.FC<HistoryPageProps> = ({ history, raffles, onUndo, onLogout, isReadOnly }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedActionType, setSelectedActionType] = useState<HistoryLogActionType | 'ALL'>('ALL');
   const [selectedRaffleId, setSelectedRaffleId] = useState<string>('ALL');
@@ -151,7 +152,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ history, raffles, onUndo, onL
                   <div className="flex-shrink-0">
                     <button
                       onClick={() => onUndo(log.id)}
-                      disabled={log.undone}
+                      disabled={log.undone || isReadOnly}
                       className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors text-slate-600 bg-slate-200 hover:bg-slate-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
                     >
                       <ArrowUturnLeftIcon className="h-4 w-4" />

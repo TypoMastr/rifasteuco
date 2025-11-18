@@ -11,9 +11,10 @@ interface SidebarProps {
     onNavigateToReimbursements: () => void;
     onLogout: () => void;
     currentPage: Page;
+    isReadOnly: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNavigate, onOpenRaffleModal, onOpenGlobalEntryModal, onNavigateToReimbursements, onLogout, currentPage }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onNavigate, onOpenRaffleModal, onOpenGlobalEntryModal, onNavigateToReimbursements, onLogout, currentPage, isReadOnly }) => {
 
     const navPage: NavPage =
         (currentPage === 'list' || currentPage === 'detail') ? 'list'
@@ -47,31 +48,34 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, onOpenRaffleModal, onOpen
                 <h1 className="text-xl font-bold text-primary">Rifas TEUCO</h1>
             </div>
 
-            <div className="space-y-2">
-                 <button
-                    onClick={onOpenRaffleModal}
-                    className="w-full py-2.5 px-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 text-sm"
-                >
-                    <TicketIcon className="h-5 w-5" />
-                    <span>Criar Nova Rifa</span>
-                </button>
-                <div className="flex space-x-2">
+            {!isReadOnly && (
+                <div className="space-y-2">
                     <button
-                        onClick={() => onOpenGlobalEntryModal('sale')}
-                        className="flex-1 py-2 px-2 bg-slate-100 text-text-secondary font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2 text-xs"
+                        onClick={onOpenRaffleModal}
+                        className="w-full py-2.5 px-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 text-sm"
                     >
-                         <ArrowUpOnSquareIcon className="h-4 w-4 text-success"/>
-                         <span>Venda</span>
+                        <TicketIcon className="h-5 w-5" />
+                        <span>Criar Nova Rifa</span>
                     </button>
-                     <button
-                        onClick={() => onOpenGlobalEntryModal('cost')}
-                        className="flex-1 py-2 px-2 bg-slate-100 text-text-secondary font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2 text-xs"
-                    >
-                         <ArrowDownOnSquareIcon className="h-4 w-4 text-danger"/>
-                         <span>Custo</span>
-                    </button>
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={() => onOpenGlobalEntryModal('sale')}
+                            className="flex-1 py-2 px-2 bg-slate-100 text-text-secondary font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2 text-xs"
+                        >
+                            <ArrowUpOnSquareIcon className="h-4 w-4 text-success"/>
+                            <span>Venda</span>
+                        </button>
+                        <button
+                            onClick={() => onOpenGlobalEntryModal('cost')}
+                            className="flex-1 py-2 px-2 bg-slate-100 text-text-secondary font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2 text-xs"
+                        >
+                            <ArrowDownOnSquareIcon className="h-4 w-4 text-danger"/>
+                            <span>Custo</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
+
 
             <nav className="flex-1 space-y-1 pt-4">
                 <NavButton page="list" label="Rifas" icon={<TicketIcon className="h-5 w-5" />} onClick={() => onNavigate('list')} />

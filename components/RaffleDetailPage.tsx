@@ -33,6 +33,7 @@ interface RaffleDetailPageProps {
     onUpdateEntry: (type: 'sale' | 'cost', entry: Sale | Cost) => void;
     onOpenReimburseModal: (raffleId: string, cost: Cost) => void;
     onFinalizeRaffleClick: (raffle: Raffle) => void;
+    isReadOnly: boolean;
 }
 
 const SaleList: React.FC<{
@@ -42,7 +43,8 @@ const SaleList: React.FC<{
     onEdit: (sale: Sale) => void,
     onSave: (entry: Omit<Sale, 'id'>) => void,
     isFinalized?: boolean;
-}> = ({ sales, ticketPrice, onDelete, onEdit, onSave, isFinalized }) => {
+    isReadOnly: boolean;
+}> = ({ sales, ticketPrice, onDelete, onEdit, onSave, isFinalized, isReadOnly }) => {
     const [showForm, setShowForm] = React.useState(false);
     const total = sales.reduce((sum, entry) => sum + entry.amount, 0);
     const totalQuantity = sales.reduce((sum, entry) => sum + entry.quantity, 0);
@@ -60,21 +62,23 @@ const SaleList: React.FC<{
             </div>
             <ul className="space-y-2">
                 {sales.length > 0 ? sales.map(sale => (
-                    <li key={sale.id} className="flex justify-between items-start bg-slate-100 p-2.5 rounded-md text-sm group hover:bg-slate-200 transition-colors">
-                        <button className="flex-1 text-left pr-2" onClick={() => onEdit(sale)}>
-                           <p className="text-text-primary group-hover:text-primary">{sale.quantity} número(s)</p>
+                    <li key={sale.id} className={`flex justify-between items-start bg-slate-100 p-2.5 rounded-md text-sm group transition-colors ${!isReadOnly && 'hover:bg-slate-200'}`}>
+                        <button className={`flex-1 text-left pr-2 ${!isReadOnly && 'cursor-pointer'}`} onClick={() => !isReadOnly && onEdit(sale)} disabled={isReadOnly}>
+                           <p className={`text-text-primary ${!isReadOnly && 'group-hover:text-primary'}`}>{sale.quantity} número(s)</p>
                            {sale.description && <p className="text-xs text-text-secondary">{sale.description}</p>}
                         </button>
                         <div className="flex items-center space-x-3">
                             <span className="font-semibold text-text-secondary w-24 text-right">{formatCurrency(sale.amount)}</span>
-                             <button onClick={(e) => { e.stopPropagation(); onDelete(sale); }} className="text-slate-400 hover:text-danger transition-colors">
-                                <TrashIcon className="h-4 w-4" />
-                            </button>
+                             {!isReadOnly && (
+                                <button onClick={(e) => { e.stopPropagation(); onDelete(sale); }} className="text-slate-400 hover:text-danger transition-colors">
+                                    <TrashIcon className="h-4 w-4" />
+                                </button>
+                             )}
                         </div>
                     </li>
                 )) : <p className="text-text-secondary text-center text-xs py-3">Nenhum lançamento.</p>}
             </ul>
-             {!isFinalized && (showForm ? (
+             {!isFinalized && !isReadOnly && (showForm ? (
                 <InlineEntryForm type="sale" ticketPrice={ticketPrice} onSave={handleSave} onCancel={() => setShowForm(false)} />
             ) : (
                 <button onClick={() => setShowForm(true)} className="w-full mt-3 py-2 px-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors text-sm flex items-center justify-center space-x-2">
@@ -92,7 +96,8 @@ const CostList: React.FC<{
     onEdit: (cost: Cost) => void,
     onSave: (entry: Omit<Cost, 'id'>) => void,
     isFinalized?: boolean;
-}> = ({ costs, onDelete, onEdit, onSave, isFinalized }) => {
+    isReadOnly: boolean;
+}> = ({ costs, onDelete, onEdit, onSave, isFinalized, isReadOnly }) => {
     const [showForm, setShowForm] = React.useState(false);
     const total = costs.filter(c => !c.isDonation).reduce((sum, entry) => sum + entry.amount, 0);
 
@@ -109,9 +114,9 @@ const CostList: React.FC<{
             </div>
             <ul className="space-y-2">
                 {costs.length > 0 ? costs.map(cost => (
-                    <li key={cost.id} className="flex justify-between items-start bg-slate-100 p-2.5 rounded-md text-sm group hover:bg-slate-200 transition-colors">
-                        <button className="flex-1 text-left pr-2" onClick={() => onEdit(cost)}>
-                            <p className="text-text-primary group-hover:text-primary">{cost.description}</p>
+                    <li key={cost.id} className={`flex justify-between items-start bg-slate-100 p-2.5 rounded-md text-sm group transition-colors ${!isReadOnly && 'hover:bg-slate-200'}`}>
+                        <button className={`flex-1 text-left pr-2 ${!isReadOnly && 'cursor-pointer'}`} onClick={() => !isReadOnly && onEdit(cost)} disabled={isReadOnly}>
+                            <p className={`text-text-primary ${!isReadOnly && 'group-hover:text-primary'}`}>{cost.description}</p>
                             {cost.notes && <p className="text-xs text-text-secondary italic mt-0.5">Obs. Custo: "{cost.notes}"</p>}
                             {cost.reimbursementNotes && <p className="text-xs text-text-secondary italic mt-0.5">Obs. Reembolso: "{cost.reimbursementNotes}"</p>}
                             {cost.date && <p className="text-xs text-text-secondary mt-0.5">{formatDate(cost.date)}</p>}
@@ -126,14 +131,16 @@ const CostList: React.FC<{
                         </button>
                         <div className="flex items-center space-x-3">
                             <span className="font-semibold text-text-secondary w-24 text-right">{formatCurrency(cost.amount)}</span>
-                             <button onClick={(e) => { e.stopPropagation(); onDelete(cost); }} className="text-slate-400 hover:text-danger transition-colors">
-                                <TrashIcon className="h-4 w-4" />
-                            </button>
+                             {!isReadOnly && (
+                                <button onClick={(e) => { e.stopPropagation(); onDelete(cost); }} className="text-slate-400 hover:text-danger transition-colors">
+                                    <TrashIcon className="h-4 w-4" />
+                                </button>
+                             )}
                         </div>
                     </li>
                 )) : <p className="text-text-secondary text-center text-xs py-3">Nenhum lançamento.</p>}
             </ul>
-             {!isFinalized && (showForm ? (
+             {!isFinalized && !isReadOnly && (showForm ? (
                 <InlineEntryForm type="cost" onSave={handleSave} onCancel={() => setShowForm(false)} />
             ) : (
                 <button onClick={() => setShowForm(true)} className="w-full mt-3 py-2 px-4 bg-danger text-white font-semibold rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center justify-center space-x-2">
@@ -149,7 +156,8 @@ const ReimbursementSection: React.FC<{
     costs: Cost[], 
     onSelectPending: (cost: Cost) => void,
     onSelectCompleted: (cost: Cost) => void,
-}> = ({ costs, onSelectPending, onSelectCompleted }) => {
+    isReadOnly: boolean,
+}> = ({ costs, onSelectPending, onSelectCompleted, isReadOnly }) => {
     const pending = costs.filter(c => c.isReimbursement && !c.reimbursedDate);
     const completed = costs.filter(c => c.isReimbursement && c.reimbursedDate);
 
@@ -166,7 +174,7 @@ const ReimbursementSection: React.FC<{
                     <h4 className="text-sm font-semibold text-amber-700 mb-2">Pendentes</h4>
                     <ul className="space-y-2">
                         {pending.map(cost => (
-                            <li key={cost.id} className="grid grid-cols-3 items-center bg-slate-100 p-2.5 rounded-md text-sm hover:bg-slate-200 cursor-pointer transition-colors" onClick={() => onSelectPending(cost)}>
+                            <li key={cost.id} className={`grid grid-cols-3 items-center bg-slate-100 p-2.5 rounded-md text-sm transition-colors ${!isReadOnly && 'hover:bg-slate-200 cursor-pointer'}`} onClick={() => !isReadOnly && onSelectPending(cost)}>
                                 <span className="text-text-primary col-span-2">{cost.description}</span>
                                 <span className="font-semibold text-text-secondary text-right">{formatCurrency(cost.amount)}</span>
                             </li>
@@ -180,7 +188,7 @@ const ReimbursementSection: React.FC<{
                     <h4 className="text-sm font-semibold text-slate-600 mb-2">Efetuados</h4>
                     <ul className="space-y-2">
                         {completed.map(cost => (
-                            <li key={cost.id} className="bg-slate-100 p-2.5 rounded-md text-sm hover:bg-slate-200 cursor-pointer transition-colors" onClick={() => onSelectCompleted(cost)}>
+                            <li key={cost.id} className={`bg-slate-100 p-2.5 rounded-md text-sm transition-colors ${!isReadOnly && 'hover:bg-slate-200 cursor-pointer'}`} onClick={() => !isReadOnly && onSelectCompleted(cost)}>
                                 <div className="flex justify-between items-center">
                                     <span className="text-text-primary">{cost.description}</span>
                                     <span className="font-semibold text-text-secondary text-right">{formatCurrency(cost.amount)}</span>
@@ -197,7 +205,7 @@ const ReimbursementSection: React.FC<{
 }
 
 
-const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onAddEntry, onOpenDeleteConfirmation, onDeleteRaffleClick, onEditRaffle, onOpenEditEntryModal, onUpdateEntry, onOpenReimburseModal, onFinalizeRaffleClick }) => {
+const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onAddEntry, onOpenDeleteConfirmation, onDeleteRaffleClick, onEditRaffle, onOpenEditEntryModal, onUpdateEntry, onOpenReimburseModal, onFinalizeRaffleClick, isReadOnly }) => {
     const totalSales = raffle.sales.reduce((sum, sale) => sum + sale.amount, 0);
     const totalCosts = raffle.costs.filter(c => !c.isDonation).reduce((sum, cost) => sum + cost.amount, 0);
     const profit = totalSales - totalCosts;
@@ -217,24 +225,28 @@ const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onA
                     <span>Voltar</span>
                 </button>
                 <div className="flex items-center space-x-2">
-                    <button 
-                        onClick={() => onFinalizeRaffleClick(raffle)}
-                        className={`text-sm font-semibold px-3 py-1.5 rounded-full transition-colors ${
-                            raffle.isFinalized
-                            ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
-                            : 'bg-slate-700 text-white hover:bg-slate-800'
-                        }`}
-                    >
-                        {raffle.isFinalized ? 'Reabrir Rifa' : 'Finalizar Rifa'}
-                    </button>
-                    {!raffle.isFinalized && (
+                    {!isReadOnly && (
                         <>
-                            <button onClick={() => onEditRaffle(raffle)} className="p-2 bg-slate-700 text-white rounded-full hover:bg-slate-800 transition-colors">
-                                <PencilIcon className="h-5 w-5" />
+                            <button 
+                                onClick={() => onFinalizeRaffleClick(raffle)}
+                                className={`text-sm font-semibold px-3 py-1.5 rounded-full transition-colors ${
+                                    raffle.isFinalized
+                                    ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+                                    : 'bg-slate-700 text-white hover:bg-slate-800'
+                                }`}
+                            >
+                                {raffle.isFinalized ? 'Reabrir Rifa' : 'Finalizar Rifa'}
                             </button>
-                            <button onClick={() => onDeleteRaffleClick(raffle)} className="p-2 bg-slate-700 text-white rounded-full hover:bg-slate-800 transition-colors">
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
+                            {!raffle.isFinalized && (
+                                <>
+                                    <button onClick={() => onEditRaffle(raffle)} className="p-2 bg-slate-700 text-white rounded-full hover:bg-slate-800 transition-colors">
+                                        <PencilIcon className="h-5 w-5" />
+                                    </button>
+                                    <button onClick={() => onDeleteRaffleClick(raffle)} className="p-2 bg-slate-700 text-white rounded-full hover:bg-slate-800 transition-colors">
+                                        <TrashIcon className="h-5 w-5" />
+                                    </button>
+                                </>
+                            )}
                         </>
                     )}
                 </div>
@@ -281,6 +293,7 @@ const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onA
                         onEdit={(sale) => onOpenEditEntryModal(raffle.id, 'sale', sale)}
                         onSave={handleSaveSale}
                         isFinalized={raffle.isFinalized}
+                        isReadOnly={isReadOnly}
                     />
                      <CostList 
                         costs={raffle.costs} 
@@ -288,12 +301,14 @@ const RaffleDetailPage: React.FC<RaffleDetailPageProps> = ({ raffle, onBack, onA
                         onEdit={(cost) => onOpenEditEntryModal(raffle.id, 'cost', cost)}
                         onSave={handleSaveCost}
                         isFinalized={raffle.isFinalized}
+                        isReadOnly={isReadOnly}
                     />
                 </div>
                 <ReimbursementSection 
                     costs={raffle.costs} 
                     onSelectPending={(cost) => onOpenReimburseModal(raffle.id, cost)} 
                     onSelectCompleted={(cost) => onOpenEditEntryModal(raffle.id, 'cost', cost)}
+                    isReadOnly={isReadOnly}
                 />
             </div>
         </div>

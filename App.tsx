@@ -29,6 +29,7 @@ type EntryToDelete = { raffleId: string; type: 'sale' | 'cost'; entryId: string;
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [raffles, setRaffles] = useState<Raffle[]>([]);
   const [history, setHistory] = useState<HistoryLog[]>([]);
@@ -52,8 +53,12 @@ function App() {
   useEffect(() => {
     try {
         const loggedIn = sessionStorage.getItem('isAuthenticated');
+        const readOnly = sessionStorage.getItem('isReadOnly');
         if (loggedIn === 'true') {
             setIsAuthenticated(true);
+            if (readOnly === 'true') {
+                setIsReadOnly(true);
+            }
         }
     } catch (e) {
         console.error("Could not access session storage:", e);
@@ -95,24 +100,36 @@ function App() {
     }
   }, [error]);
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (readOnly: boolean = false) => {
     try {
         sessionStorage.setItem('isAuthenticated', 'true');
+        if (readOnly) {
+            sessionStorage.setItem('isReadOnly', 'true');
+            setIsReadOnly(true);
+        } else {
+            sessionStorage.removeItem('isReadOnly');
+            setIsReadOnly(false);
+        }
         setIsAuthenticated(true);
     } catch (e) {
         console.error("Could not access session storage:", e);
         // Fallback for environments where sessionStorage is blocked
         setIsAuthenticated(true); 
+        if (readOnly) {
+            setIsReadOnly(true);
+        }
     }
   };
 
   const handleLogout = () => {
     try {
         sessionStorage.removeItem('isAuthenticated');
+        sessionStorage.removeItem('isReadOnly');
     } catch (e) {
         console.error("Could not access session storage:", e);
     }
     setIsAuthenticated(false);
+    setIsReadOnly(false);
   };
 
   const handleNavigate = (page: 'list' | 'reports' | 'history') => {
@@ -509,6 +526,7 @@ function App() {
             onUpdateEntry={(type, entry) => handleUpdateEntry(selectedRaffle.id, type, entry)}
             onOpenReimburseModal={handleOpenReimburseModal}
             onFinalizeRaffleClick={handleFinalizeRaffleClick}
+            isReadOnly={isReadOnly}
           />
         ) : null;
       case 'reports':
@@ -522,6 +540,7 @@ function App() {
           onOpenReimburseModal={handleOpenReimburseModal}
           onNavigateToHistory={handleNavigateToReimbursementHistory}
           onLogout={handleLogout}
+          isReadOnly={isReadOnly}
         />;
       case 'reimbursementHistory':
         return <ReimbursementHistoryPage 
@@ -532,7 +551,7 @@ function App() {
       case 'monthlyReports':
         return <MonthlyReportsPage raffles={raffles} onBack={() => setCurrentPage('reports')} onSelectRaffle={(id) => handleSelectRaffle(id, 'monthlyReports')} />;
       case 'history':
-        return <HistoryPage history={history} raffles={raffles} onUndo={handleUndoActionClick} onLogout={handleLogout} />;
+        return <HistoryPage history={history} raffles={raffles} onUndo={handleUndoActionClick} onLogout={handleLogout} isReadOnly={isReadOnly} />;
       case 'list':
       default:
         return <RaffleListPage raffles={raffles} onSelectRaffle={(id) => handleSelectRaffle(id, 'list')} onLogout={handleLogout} />;
@@ -556,6 +575,7 @@ function App() {
             onNavigateToReimbursements={handleNavigateToReimbursements}
             onLogout={handleLogout}
             currentPage={currentPage}
+            isReadOnly={isReadOnly}
         />
         <div className="md:pl-64">
             <main className="px-4 py-6 pb-24 md:py-8 md:px-10 lg:px-16 md:pb-8">
@@ -569,6 +589,7 @@ function App() {
         onOpenGlobalEntryModal={(type) => setActiveModal(type === 'sale' ? 'globalSale' : 'globalCost')}
         onNavigateToReimbursements={handleNavigateToReimbursements}
         currentPage={currentPage}
+        isReadOnly={isReadOnly}
       />
 
       <RaffleFormModal 
