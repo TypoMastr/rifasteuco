@@ -13,23 +13,13 @@ async function handleGet(req: VercelRequest, res: VercelResponse) {
 
         const rafflesWithDetails: Raffle[] = raffles.map((raffle: any) => ({
             ...raffle,
-            ticketPrice: parseFloat(raffle.ticketPrice),
             isFinalized: !!raffle.isFinalized,
-            sales: sales
-                .filter((s: any) => s.raffleId === raffle.id)
-                .map((sale: any) => ({
-                    ...sale,
-                    quantity: parseInt(sale.quantity, 10),
-                    amount: parseFloat(sale.amount),
-                })),
-            costs: costs
-                .filter((c: any) => c.raffleId === raffle.id)
-                .map((cost: any) => ({
-                    ...cost,
-                    amount: parseFloat(cost.amount),
-                    isDonation: !!cost.isDonation,
-                    isReimbursement: !!cost.isReimbursement,
-                })),
+            sales: sales.filter((s: any) => s.raffleId === raffle.id),
+            costs: costs.filter((c: any) => c.raffleId === raffle.id).map((cost: any) => ({
+                ...cost,
+                isDonation: !!cost.isDonation,
+                isReimbursement: !!cost.isReimbursement
+            })),
         }));
 
         return res.status(200).json(rafflesWithDetails);
